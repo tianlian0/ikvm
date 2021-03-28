@@ -4112,19 +4112,17 @@ namespace IKVM.NativeCode.java
 			private static int GetIndex(System.Net.NetworkInformation.NetworkInterface ni)
 			{
 				System.Net.NetworkInformation.IPInterfaceProperties ipprops = ni.GetIPProperties();
-				System.Net.NetworkInformation.IPv4InterfaceProperties ipv4props = GetIPv4Properties(ipprops);
-				if (ipv4props != null)
-				{
-					return ipv4props.Index;
-				}
-				else if (InetAddressImplFactory.isIPv6Supported())
-				{
-					System.Net.NetworkInformation.IPv6InterfaceProperties ipv6props = GetIPv6Properties(ipprops);
-					if (ipv6props != null)
-					{
-						return ipv6props.Index;
-					}
-				}
+                if (ni.Supports(System.Net.NetworkInformation.NetworkInterfaceComponent.IPv4))
+                {
+                    System.Net.NetworkInformation.IPv4InterfaceProperties ipv4props = ipprops.GetIPv4Properties();
+                    return ipv4props.Index;
+                }
+                else if (InetAddressImplFactory.isIPv6Supported()
+                         && ni.Supports(System.Net.NetworkInformation.NetworkInterfaceComponent.IPv6))
+                {
+                    System.Net.NetworkInformation.IPv6InterfaceProperties ipv6props = ipprops.GetIPv6Properties();
+                    return ipv6props.Index;
+                }
 				return -1;
 			}
 
